@@ -82,3 +82,14 @@ export interface Testimonial {
   detailedReview: string;
   date: string;
 }
+
+export interface CustomerOrder {
+  id: string;
+  customerEmail: string;
+  items: CartItem[];
+  subtotal: number;
+  squarePaymentId?: string;
+  squareOrderId?: string;
+  createdAt: string;
+  status: 'confirmed' | 'dispatched' | 'delivered';
+}

@@ -6,9 +6,9 @@ describe('SpaDataService', () => {
   let service: SpaDataService;
 
   beforeEach(() => {
+    localStorage.clear();
     TestBed.configureTestingModule({});
     service = TestBed.inject(SpaDataService);
-    localStorage.clear();
   });
 
   it('should be created and load initial services', () => {
@@ -52,6 +52,11 @@ describe('SpaDataService', () => {
     expect(service.cartItemCount()).toBe(2);
     expect(service.cartSubtotal()).toBe(100);
 
+    // Verify localStorage persistence
+    const savedCart = JSON.parse(localStorage.getItem('aura_botanica_cart') || '[]');
+    expect(savedCart.length).toBe(1);
+    expect(savedCart[0].quantity).toBe(2);
+
     service.updateCartQuantity('prod-test-1', 3);
     expect(service.cartItemCount()).toBe(3);
     expect(service.cartSubtotal()).toBe(150);
@@ -59,6 +64,21 @@ describe('SpaDataService', () => {
     service.removeFromCart('prod-test-1');
     expect(service.cart().length).toBe(0);
     expect(service.cartSubtotal()).toBe(0);
+  });
+
+  it('should record completed customer orders', () => {
+    service.recordCompletedOrder({
+      id: 'sq-ord-test-101',
+      customerEmail: 'helena.vance@example.com',
+      items: [],
+      subtotal: 100,
+      squarePaymentId: 'sq-pay-test',
+      createdAt: new Date().toISOString(),
+      status: 'confirmed'
+    });
+
+    expect(service.customerOrders().length).toBe(1);
+    expect(service.customerOrders()[0].id).toBe('sq-ord-test-101');
   });
 
   it('should create an appointment booking with confirmed status', () => {

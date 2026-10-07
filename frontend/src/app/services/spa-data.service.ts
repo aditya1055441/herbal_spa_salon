@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { TreatmentService, DiagnosticQuestion, HerbalProduct, CartItem, AppointmentBooking, Testimonial, DiagnosticResult } from '../models/spa.model';
+import { TreatmentService, DiagnosticQuestion, HerbalProduct, CartItem, AppointmentBooking, Testimonial, DiagnosticResult, CustomerOrder } from '../models/spa.model';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +8,8 @@ export class SpaDataService {
   private readonly STORAGE_BOOKINGS_KEY = 'aura_botanica_bookings';
   private readonly STORAGE_SERVICES_KEY = 'aura_botanica_services';
   private readonly STORAGE_PRODUCTS_KEY = 'aura_botanica_products';
+  private readonly STORAGE_CART_KEY = 'aura_botanica_cart';
+  private readonly STORAGE_ORDERS_KEY = 'aura_botanica_customer_orders';
 
   // Initial Services Data
   private initialServices: TreatmentService[] = [
@@ -393,7 +395,8 @@ export class SpaDataService {
   // Reactive Signals State
   public services = signal<TreatmentService[]>(this.loadServices());
   public products = signal<HerbalProduct[]>(this.loadProducts());
-  public cart = signal<CartItem[]>([]);
+  public cart = signal<CartItem[]>(this.loadCart());
+  public customerOrders = signal<CustomerOrder[]>(this.loadCustomerOrders());
   public bookings = signal<AppointmentBooking[]>(this.loadBookings());
   
   // Selected Service for Quick Booking or Modal
@@ -411,6 +414,47 @@ export class SpaDataService {
   constructor() {}
 
   // Persistence helpers
+  private loadCart(): CartItem[] {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_CART_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn('Could not read cart from localStorage', e);
+    }
+    return [];
+  }
+
+  private saveCart() {
+    try {
+      localStorage.setItem(this.STORAGE_CART_KEY, JSON.stringify(this.cart()));
+    } catch (e) {
+      console.warn('Could not save cart to localStorage', e);
+    }
+  }
+
+  private loadCustomerOrders(): CustomerOrder[] {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_ORDERS_KEY);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn('Could not read customer orders from localStorage', e);
+    }
+    return [];
+  }
+
+  public recordCompletedOrder(order: CustomerOrder) {
+    this.customerOrders.update(current => [order, ...current]);
+    try {
+      localStorage.setItem(this.STORAGE_ORDERS_KEY, JSON.stringify(this.customerOrders()));
+    } catch (e) {
+      console.warn('Could not save customer orders to localStorage', e);
+    }
+  }
+
   private loadServices(): TreatmentService[] {
     try {
       const stored = localStorage.getItem(this.STORAGE_SERVICES_KEY);
@@ -557,6 +601,7 @@ export class SpaDataService {
       }
       return [...currentItems, { product, quantity }];
     });
+    this.saveCart();
   }
 
   public updateCartQuantity(productId: string, quantity: number) {
@@ -567,14 +612,17 @@ export class SpaDataService {
     this.cart.update(current => 
       current.map(item => item.product.id === productId ? { ...item, quantity } : item)
     );
+    this.saveCart();
   }
 
   public removeFromCart(productId: string) {
     this.cart.update(current => current.filter(item => item.product.id !== productId));
+    this.saveCart();
   }
 
   public clearCart() {
     this.cart.set([]);
+    this.saveCart();
   }
 
   // Booking operations

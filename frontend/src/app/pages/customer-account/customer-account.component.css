@@ -111,6 +111,125 @@
   gap: 1rem;
 }
 
+/* Active Baggage Card */
+.bag-dashboard-card {
+  border-left: 4px solid var(--color-gold);
+}
+
+.empty-bag-state {
+  padding: 2.5rem 1.5rem;
+}
+
+.bag-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.bag-item-card {
+  background-color: var(--color-bg-cream);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 1.25rem 1.5rem;
+  transition: var(--transition-fast);
+}
+
+.bag-item-card:hover {
+  background-color: #ffffff;
+  border-color: var(--border-gold);
+}
+
+.item-visual-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.herb-emoji {
+  width: 44px;
+  height: 44px;
+  background-color: var(--color-bg-stone);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.cat-pill {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-gold-dark);
+}
+
+.bag-product-title {
+  font-family: var(--font-serif);
+  font-size: 1.15rem;
+  color: var(--color-forest-deep);
+  margin: 0.2rem 0;
+}
+
+.bag-size-price {
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+}
+
+.bag-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.bag-item-line-total {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-forest-deep);
+  min-width: 60px;
+  text-align: right;
+}
+
+.bag-remove-icon-btn {
+  background: transparent;
+  color: var(--color-text-light);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.3rem;
+  border-radius: 50%;
+  transition: var(--transition-fast);
+}
+
+.bag-remove-icon-btn:hover {
+  color: var(--color-terracotta);
+  background-color: rgba(185, 112, 89, 0.1);
+}
+
+.bag-dashboard-summary {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px dashed var(--border-medium);
+}
+
+.subtotal-info span {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-text-light);
+}
+
+.subtotal-amount {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: var(--color-forest-deep);
+}
+
+.bag-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
 /* Empty Bookings State */
 .empty-bookings-state {
   padding: 3rem 1.5rem;

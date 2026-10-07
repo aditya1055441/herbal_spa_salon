@@ -56,11 +56,82 @@ import { SpaDataService } from '../../services/spa-data.service';
           <!-- Dashboard Content Grid -->
           <div class="dashboard-grid">
             
-            <!-- Left Column: My Appointments -->
+            <!-- Left Column: Active Baggage & Appointments -->
             <div class="grid-col main-col">
-              <div class="luxury-card">
+              
+              <!-- 1. ACTIVE BOTANICAL BAG SECTION -->
+              <div class="luxury-card mb-4 bag-dashboard-card">
                 <div class="col-header flex-between">
                   <div>
+                    <span class="badge badge-gold">Active Baggage</span>
+                    <h3>Your Selected Botanical Bag ({{ spaService.cartItemCount() }} items)</h3>
+                    <p>Remedies added to your bag, available in both this dashboard and the slide-out baggage drawer.</p>
+                  </div>
+                  <button *ngIf="spaService.cart().length > 0" class="btn btn-outline btn-sm" (click)="openBaggageDrawer()">
+                    View in Baggage Drawer ↗
+                  </button>
+                </div>
+
+                <!-- Empty Cart State -->
+                <div *ngIf="spaService.cart().length === 0" class="empty-bag-state text-center">
+                  <div class="empty-icon">🍃</div>
+                  <h4>Your botanical bag is currently empty</h4>
+                  <p>Explore our certified organic take-home remedies decocted to extend your treatment results.</p>
+                  <a routerLink="/shop" class="btn btn-primary btn-sm mt-2">
+                    Explore Take-Home Apothecary →
+                  </a>
+                </div>
+
+                <!-- Populated Cart Items in Dashboard -->
+                <div *ngIf="spaService.cart().length > 0" class="bag-items-list">
+                  <div *ngFor="let item of spaService.cart()" class="bag-item-card flex-between">
+                    <div class="item-visual-info">
+                      <span class="herb-emoji">🌱</span>
+                      <div>
+                        <span class="cat-pill">{{ item.product.botanicalCategory | uppercase }}</span>
+                        <h4 class="bag-product-title">{{ item.product.name }}</h4>
+                        <span class="bag-size-price">{{ item.product.size }} • $\{{ item.product.price }} each</span>
+                      </div>
+                    </div>
+
+                    <div class="bag-item-controls">
+                      <div class="qty-stepper">
+                        <button (click)="spaService.updateCartQuantity(item.product.id, item.quantity - 1)">-</button>
+                        <span>{{ item.quantity }}</span>
+                        <button (click)="spaService.updateCartQuantity(item.product.id, item.quantity + 1)">+</button>
+                      </div>
+
+                      <span class="bag-item-line-total">$\{{ item.product.price * item.quantity }}</span>
+
+                      <button class="bag-remove-icon-btn" (click)="spaService.removeFromCart(item.product.id)" title="Remove item">
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Cart Summary Strip -->
+                  <div class="bag-dashboard-summary flex-between">
+                    <div class="subtotal-info">
+                      <span>Bag Subtotal:</span>
+                      <strong class="subtotal-amount">$\{{ spaService.cartSubtotal() }} USD</strong>
+                    </div>
+
+                    <div class="bag-action-buttons">
+                      <a routerLink="/shop" class="btn btn-outline btn-sm">Add More Remedies</a>
+                      <button class="btn btn-primary" (click)="openBaggageDrawer()">
+                        Checkout via Square POS →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+              <!-- 2. RESERVED APPOINTMENTS SECTION -->
+              <div class="luxury-card appointments-card">
+                <div class="col-header flex-between">
+                  <div>
+                    <span class="badge badge-sage">Calendar Sync</span>
                     <h3>Your Reserved Herbal Rituals</h3>
                     <p>Appointments synchronized with our master herbalists' schedule.</p>
                   </div>
@@ -71,10 +142,10 @@ import { SpaDataService } from '../../services/spa-data.service';
 
                 <!-- Empty Appointments State -->
                 <div *ngIf="customerBookings().length === 0" class="empty-bookings-state text-center">
-                  <div class="empty-icon">🍃</div>
+                  <div class="empty-icon">🕊️</div>
                   <h4>No upcoming appointments</h4>
                   <p>Ready to experience our chemical-free scalp, skin, or body therapies?</p>
-                  <a routerLink="/services" class="btn btn-outline btn-sm">
+                  <a routerLink="/services" class="btn btn-outline btn-sm mt-2">
                     Explore Herbal Rituals
                   </a>
                 </div>
@@ -174,6 +245,11 @@ export class CustomerAccountComponent {
     }
     return matched;
   });
+
+  public openBaggageDrawer() {
+    const event = new CustomEvent('toggle-apothecary-cart');
+    window.dispatchEvent(event);
+  }
 
   public handleLogout() {
     this.customerAuth.logout();

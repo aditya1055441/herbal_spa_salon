@@ -1,8 +1,9 @@
-import { Component, inject, signal, HostListener, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SpaDataService } from '../../services/spa-data.service';
 import { SquareService } from '../../services/square.service';
+import { CustomerAuthService } from '../../services/customer-auth.service';
 
 @Component({
   selector: 'app-cart-drawer',
@@ -27,6 +28,11 @@ import { SquareService } from '../../services/square.service';
         <button class="close-btn" (click)="closeCart()" aria-label="Close cart">
           ✕
         </button>
+      </div>
+
+      <!-- Logged-in Customer Synchronized Bag Indicator -->
+      <div *ngIf="customerAuth.isCustomerLoggedIn()" class="cart-member-banner">
+        🌸 <span>Synchronized with <strong>{{ customerAuth.currentCustomer()?.name }}</strong>'s Dashboard</span>
       </div>
 
       <!-- Free Shipping / Herbal Care Banner -->
@@ -107,6 +113,7 @@ import { SquareService } from '../../services/square.service';
 export class CartDrawerComponent implements OnInit, OnDestroy {
   public spaService = inject(SpaDataService);
   public squareService = inject(SquareService);
+  public customerAuth = inject(CustomerAuthService);
   private router = inject(Router);
 
   public isOpen = signal<boolean>(false);
@@ -142,6 +149,7 @@ export class CartDrawerComponent implements OnInit, OnDestroy {
   public async handleCheckout() {
     this.isCheckingOut.set(true);
     const subtotal = this.spaService.cartSubtotal();
+    const currentCustomer = this.customerAuth.currentCustomer();
 
     try {
       const result = await this.squareService.processPayment(
@@ -149,13 +157,28 @@ export class CartDrawerComponent implements OnInit, OnDestroy {
         'USD',
         'Take-Home Apothecary Botanicals Order',
         {
-          name: 'Spa Guest',
-          email: 'guest@aurabotanica.com'
+          name: currentCustomer?.name || 'Spa Guest',
+          email: currentCustomer?.email || 'guest@aurabotanica.com',
+          phone: currentCustomer?.phone
         }
       );
 
       if (result.success) {
-        this.orderId.set(result.orderId || 'SQ-ORD-APOTH-88');
+        const orderIdGenerated = result.orderId || `sq-ord-${Date.now().toString(36)}`;
+        this.orderId.set(orderIdGenerated);
+        
+        // Record order in spaService state for customer dashboard
+        this.spaService.recordCompletedOrder({
+          id: orderIdGenerated,
+          customerEmail: currentCustomer?.email || 'guest@aurabotanica.com',
+          items: [...this.spaService.cart()],
+          subtotal: subtotal,
+          squarePaymentId: result.paymentId,
+          squareOrderId: result.orderId,
+          createdAt: new Date().toISOString(),
+          status: 'confirmed'
+        });
+
         this.checkoutSuccess.set(true);
         setTimeout(() => {
           this.spaService.clearCart();
