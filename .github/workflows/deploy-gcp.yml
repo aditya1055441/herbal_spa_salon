@@ -1,0 +1,113 @@
+name: CI/CD Pipeline - Build, Test & Deploy to Google Cloud Platform
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+  workflow_dispatch:
+
+env:
+  GCP_REGION: us-central1
+  SERVICE_NAME: aura-botanica-spa
+  IMAGE_NAME: aura-botanica-spa
+
+jobs:
+  # ============================================================================
+  # 1. CI Stage: Automated Testing & Production Build Verification
+  # ============================================================================
+  ci-test-and-build:
+    name: Test & Build (Frontend & Backend)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+
+      # Backend Tests
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run Backend Tests
+        working-directory: backend
+        run: npm test
+
+      # Frontend Tests & Build
+      - name: Install Frontend Dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run Frontend Karma Unit Tests (Headless Chrome)
+        working-directory: frontend
+        run: npm run test:ci
+
+      - name: Build Frontend Production Artifact
+        working-directory: frontend
+        run: npm run build -- --configuration=production
+
+  # ============================================================================
+  # 2. CD Stage: Containerize & Deploy to Google Cloud Run
+  # ============================================================================
+  cd-deploy-to-gcp:
+    name: Deploy to Google Cloud Run
+    needs: ci-test-and-build
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud Platform
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Google Container / Artifact Registry
+        run: gcloud auth configure-docker --quiet
+
+      - name: Build and Tag Multi-Stage Docker Image
+        run: |
+          docker build \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest \
+            .
+
+      - name: Push Docker Image to Container Registry
+        run: |
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Deploy Container to Google Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.GCP_REGION }}
+          image: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          flags: '--allow-unauthenticated --port=8080'
+          env_vars: |
+            NODE_ENV=production
+            SQUARE_ENVIRONMENT=sandbox
+            SQUARE_LOCATION_ID=L_AURA_SANCTUARY_01
+
+      - name: Deployment Summary
+        run: |
+          echo "### 🌿 Aura Botanica Deployment Succeeded!" >> $GITHUB_STEP_SUMMARY
+          echo "**Service Name:** \`${{ env.SERVICE_NAME }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**GCP Region:** \`${{ env.GCP_REGION }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Deployed Image:** \`gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Live URL:** ${{ steps.deploy.outputs.url }}" >> $GITHUB_STEP_SUMMARY

@@ -1,6 +1,6 @@
 # ==============================================================================
 # Aura Botanica - Pure Herbal Salon & Spa
-# Production Multi-Stage Dockerfile for Google Cloud Platform (Cloud Run) & AWS (App Runner)
+# Production Multi-Stage Dockerfile for Render (render.com) Web Service
 # ==============================================================================
 
 # Stage 1: Build Angular Frontend
@@ -13,12 +13,12 @@ RUN npm ci
 COPY frontend/ ./
 RUN npm run build -- --configuration=production
 
-# Stage 2: Prepare Node.js Backend & API Gateway
+# Stage 2: Prepare Node.js Backend & Static SPA Server
 FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=10000
 
 COPY backend/package*.json ./backend/
 RUN cd backend && npm ci --only=production
@@ -26,6 +26,7 @@ RUN cd backend && npm ci --only=production
 COPY backend/ ./backend/
 COPY --from=frontend-builder /app/frontend/dist/frontend/browser /app/frontend/dist/frontend/browser
 
-EXPOSE 8080
+# Render exposes the web service via the port defined in $PORT (default 10000)
+EXPOSE 10000
 
 CMD ["node", "backend/server.js"]

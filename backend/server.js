@@ -503,7 +503,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`🌿 Aura Botanica Server listening on port ${PORT}`);
-  console.log(`   Health check: http://localhost:${PORT}/api/health`);
+  console.log(`   Health check: http://0.0.0.0:${PORT}/api/health`);
 });
