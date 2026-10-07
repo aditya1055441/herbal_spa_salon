@@ -65,7 +65,19 @@ import { CustomerAuthService } from '../../services/customer-auth.service';
                     <small class="field-hint">We will immediately send a 6-digit verification code to confirm your email.</small>
                   </div>
 
-                  <div *ngIf="errorMessage()" class="alert-banner alert-error">
+                  <!-- Already Registered Notification Callout -->
+                  <div *ngIf="isAlreadyRegistered()" class="alert-banner alert-warning already-registered-box">
+                    <div class="warn-header">
+                      <span>⚠️ <strong>user already registerd, please sign-in to continue</strong></span>
+                    </div>
+                    <p class="warn-desc">An account with <strong>{{ email }}</strong> is already active.</p>
+                    <button type="button" class="btn btn-secondary btn-sm w-100 mt-2" (click)="switchToSignInWithEmail()">
+                      Sign In with this Email →
+                    </button>
+                  </div>
+
+                  <!-- Standard Error Banner -->
+                  <div *ngIf="errorMessage() && !isAlreadyRegistered()" class="alert-banner alert-error">
                     ⚠️ {{ errorMessage() }}
                   </div>
 
@@ -75,7 +87,7 @@ import { CustomerAuthService } from '../../services/customer-auth.service';
                     [disabled]="isSubmitting() || !email.trim()"
                   >
                     <span *ngIf="!isSubmitting()">Send Email Verification Code →</span>
-                    <span *ngIf="isSubmitting()">Dispatching Code to Mail...</span>
+                    <span *ngIf="isSubmitting()">Checking & Dispatching Code...</span>
                   </button>
                 </form>
               </div>
@@ -221,8 +233,8 @@ import { CustomerAuthService } from '../../services/customer-auth.service';
                 </button>
 
                 <div class="text-center">
-                  <button type="button" class="btn-link" (click)="switchToCodeLogin()">
-                    Or sign in using one-time email code →
+                  <button type="button" class="btn-link" (click)="switchToRegister()">
+                    New guest? Register for Sanctuary Circle →
                   </button>
                 </div>
               </form>
@@ -247,6 +259,7 @@ export class CustomerAuthComponent implements OnInit {
 
   public authMode = signal<'register' | 'login'>('register');
   public registerStep = signal<number>(1);
+  public isAlreadyRegistered = signal<boolean>(false);
 
   // Form Fields
   public email = '';
@@ -281,6 +294,17 @@ export class CustomerAuthComponent implements OnInit {
     this.authMode.set(mode);
     this.errorMessage.set('');
     this.successMessage.set('');
+    this.isAlreadyRegistered.set(false);
+  }
+
+  public switchToSignInWithEmail() {
+    this.setMode('login');
+    // keep this.email populated so user just enters password
+  }
+
+  public switchToRegister() {
+    this.setMode('register');
+    this.registerStep.set(1);
   }
 
   public async requestVerificationCode(e: Event) {
@@ -291,6 +315,7 @@ export class CustomerAuthComponent implements OnInit {
     }
 
     this.errorMessage.set('');
+    this.isAlreadyRegistered.set(false);
     this.isSubmitting.set(true);
 
     try {
@@ -298,7 +323,12 @@ export class CustomerAuthComponent implements OnInit {
       if (res.success) {
         this.registerStep.set(2);
       } else {
-        this.errorMessage.set(res.message || 'Could not send verification code.');
+        if (res.alreadyRegistered || res.message?.toLowerCase().includes('already register')) {
+          this.isAlreadyRegistered.set(true);
+          this.errorMessage.set('user already registerd, please sign-in to continue');
+        } else {
+          this.errorMessage.set(res.message || 'Could not send verification code.');
+        }
       }
     } catch (err: any) {
       this.errorMessage.set(err?.message || 'Error requesting verification code.');
@@ -372,10 +402,5 @@ export class CustomerAuthComponent implements OnInit {
     } finally {
       this.isSubmitting.set(false);
     }
-  }
-
-  public switchToCodeLogin() {
-    this.setMode('register');
-    this.registerStep.set(1);
   }
 }

@@ -11,9 +11,9 @@ import { CustomerAuthService } from '../../services/customer-auth.service';
   imports: [CommonModule],
   template: `
     <!-- Overlay Backdrop -->
-    <div 
-      class="cart-overlay" 
-      [class.open]="isOpen()" 
+    <div
+      class="cart-overlay"
+      [class.open]="isOpen()"
       (click)="closeCart()"
       *ngIf="isOpen()"
     ></div>
@@ -47,7 +47,7 @@ import { CustomerAuthService } from '../../services/customer-auth.service';
           <h4>Your bag is waiting</h4>
           <p>Explore our certified organic take-home remedies decocted to extend your treatment results.</p>
           <button class="btn btn-outline btn-sm" (click)="goToShop()">
-            Explore Take-Home Apothecary
+            Explore Take-Home
           </button>
         </div>
 
@@ -87,8 +87,8 @@ import { CustomerAuthService } from '../../services/customer-auth.service';
         <p class="tax-shipping-note">Taxes calculated at Square POS checkout. Carbon-neutral shipping.</p>
 
         <!-- Square Checkout Action -->
-        <button 
-          class="btn btn-primary w-100 checkout-btn" 
+        <button
+          class="btn btn-primary w-100 checkout-btn"
           [disabled]="isCheckingOut()"
           (click)="handleCheckout()"
         >
@@ -166,7 +166,7 @@ export class CartDrawerComponent implements OnInit, OnDestroy {
       if (result.success) {
         const orderIdGenerated = result.orderId || `sq-ord-${Date.now().toString(36)}`;
         this.orderId.set(orderIdGenerated);
-        
+
         // Record order in spaService state for customer dashboard
         this.spaService.recordCompletedOrder({
           id: orderIdGenerated,

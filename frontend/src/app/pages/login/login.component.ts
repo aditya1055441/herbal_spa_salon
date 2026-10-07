@@ -11,11 +11,11 @@ import { AuthService } from '../../services/auth.service';
   template: `
     <section class="login-page-section">
       <div class="container">
-        
+
         <!-- Login Form Box -->
         <div class="login-box-wrapper">
           <div class="luxury-card login-card">
-            
+
             <!-- Standard Login View -->
             <div *ngIf="!authService.needsPasswordChange()">
               <div class="auth-header text-center">
@@ -40,24 +40,24 @@ import { AuthService } from '../../services/auth.service';
               <form class="auth-form" (submit)="handleLogin($event)">
                 <div class="form-group">
                   <label>Practitioner Username</label>
-                  <input 
-                    type="text" 
-                    [(ngModel)]="username" 
-                    name="username" 
-                    placeholder="admin" 
-                    required 
+                  <input
+                    type="text"
+                    [(ngModel)]="username"
+                    name="username"
+                    placeholder="admin"
+                    required
                     class="custom-input"
                   />
                 </div>
 
                 <div class="form-group">
                   <label>Master Password</label>
-                  <input 
-                    type="password" 
-                    [(ngModel)]="password" 
-                    name="password" 
-                    placeholder="••••••••" 
-                    required 
+                  <input
+                    type="password"
+                    [(ngModel)]="password"
+                    name="password"
+                    placeholder="••••••••"
+                    required
                     class="custom-input"
                   />
                 </div>
@@ -66,9 +66,9 @@ import { AuthService } from '../../services/auth.service';
                   ⚠️ {{ errorMessage() }}
                 </div>
 
-                <button 
-                  type="submit" 
-                  class="btn btn-primary w-100 auth-btn" 
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100 auth-btn"
                   [disabled]="isSubmitting()"
                 >
                   <span *ngIf="!isSubmitting()">Sign In to Sanctuary CMS →</span>
@@ -99,36 +99,36 @@ import { AuthService } from '../../services/auth.service';
               <form class="auth-form" (submit)="handlePasswordChange($event)">
                 <div class="form-group">
                   <label>Current / Default Password *</label>
-                  <input 
-                    type="password" 
-                    [(ngModel)]="currentPassword" 
-                    name="currentPassword" 
-                    placeholder="Enter 'system'" 
-                    required 
+                  <input
+                    type="password"
+                    [(ngModel)]="currentPassword"
+                    name="currentPassword"
+                    placeholder="Enter 'system'"
+                    required
                     class="custom-input"
                   />
                 </div>
 
                 <div class="form-group">
                   <label>New Secure Password * (Minimum 6 characters)</label>
-                  <input 
-                    type="password" 
-                    [(ngModel)]="newPassword" 
-                    name="newPassword" 
-                    placeholder="Choose a new password" 
-                    required 
+                  <input
+                    type="password"
+                    [(ngModel)]="newPassword"
+                    name="newPassword"
+                    placeholder="Choose a new password"
+                    required
                     class="custom-input"
                   />
                 </div>
 
                 <div class="form-group">
                   <label>Confirm New Password *</label>
-                  <input 
-                    type="password" 
-                    [(ngModel)]="confirmPassword" 
-                    name="confirmPassword" 
-                    placeholder="Confirm new password" 
-                    required 
+                  <input
+                    type="password"
+                    [(ngModel)]="confirmPassword"
+                    name="confirmPassword"
+                    placeholder="Confirm new password"
+                    required
                     class="custom-input"
                   />
                 </div>
@@ -141,9 +141,9 @@ import { AuthService } from '../../services/auth.service';
                   ✓ Password updated successfully! Redirecting to Sanctuary CMS...
                 </div>
 
-                <button 
-                  type="submit" 
-                  class="btn btn-primary w-100 auth-btn" 
+                <button
+                  type="submit"
+                  class="btn btn-primary w-100 auth-btn"
                   [disabled]="isSubmitting()"
                 >
                   <span *ngIf="!isSubmitting()">Update Password & Proceed to Admin →</span>

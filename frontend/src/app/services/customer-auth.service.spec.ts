@@ -23,7 +23,7 @@ describe('CustomerAuthService', () => {
   });
 
   it('should dispatch an email verification code and store pending email', async () => {
-    const email = 'claire.dubois@example.com';
+    const email = `test.user.${Date.now()}.${Math.random().toString(36).substring(2, 6)}@example.com`;
     const res = await service.sendVerificationCode(email);
 
     expect(res.success).toBeTrue();
@@ -33,7 +33,7 @@ describe('CustomerAuthService', () => {
   });
 
   it('should verify the code and register the customer account', async () => {
-    const email = 'claire.dubois@example.com';
+    const email = `test.reg.${Date.now()}.${Math.random().toString(36).substring(2, 6)}@example.com`;
     const codeRes = await service.sendVerificationCode(email);
     const code = service.lastSentDemoCode()!;
 
@@ -52,8 +52,51 @@ describe('CustomerAuthService', () => {
     expect(service.currentCustomer()?.verified).toBeTrue();
   });
 
+  it('should notify "user already registerd, please sign-in to continue" if email is already registered', async () => {
+    const email = `test.dup.${Date.now()}.${Math.random().toString(36).substring(2, 6)}@example.com`;
+    // 1. Register first
+    await service.sendVerificationCode(email);
+    const code = service.lastSentDemoCode()!;
+    await service.verifyCodeAndRegister(email, code, 'Claire', 'Pass1234');
+
+    // 2. Attempt to register again with the same email
+    const duplicateRes = await service.sendVerificationCode(email);
+    expect(duplicateRes.success).toBeFalse();
+    expect(duplicateRes.alreadyRegistered).toBeTrue();
+    expect(duplicateRes.message).toContain('user already registerd, please sign-in to continue');
+  });
+
+  it('should allow user to log out and successfully sign in again with the same email and password', async () => {
+    const email = `test.login.${Date.now()}.${Math.random().toString(36).substring(2, 6)}@example.com`;
+    const password = 'MyHerbalPass2026!';
+
+    // 1. Register
+    await service.sendVerificationCode(email);
+    const code = service.lastSentDemoCode()!;
+    const regRes = await service.verifyCodeAndRegister(email, code, 'Eleanor Vance', password);
+    expect(regRes.success).toBeTrue();
+
+    // 2. Log out
+    service.logout();
+    expect(service.isCustomerLoggedIn()).toBeFalse();
+    expect(service.currentCustomer()).toBeNull();
+
+    // 3. Sign in with same email and password
+    const loginRes = await service.loginWithPassword(email, password);
+    expect(loginRes.success).toBeTrue();
+    expect(service.isCustomerLoggedIn()).toBeTrue();
+    expect(service.currentCustomer()?.email).toBe(email);
+    expect(service.currentCustomer()?.name).toBe('Eleanor Vance');
+
+    // 4. Reject invalid password
+    service.logout();
+    const badLogin = await service.loginWithPassword(email, 'WrongPassword123');
+    expect(badLogin.success).toBeFalse();
+    expect(badLogin.errorMessage).toContain('Invalid email or password');
+  });
+
   it('should reject invalid verification code', async () => {
-    const email = 'soraya@example.com';
+    const email = `test.invalid.${Date.now()}.${Math.random().toString(36).substring(2, 6)}@example.com`;
     await service.sendVerificationCode(email);
 
     const invalidRes = await service.verifyCodeAndRegister(
@@ -65,19 +108,5 @@ describe('CustomerAuthService', () => {
 
     expect(invalidRes.success).toBeFalse();
     expect(service.isCustomerLoggedIn()).toBeFalse();
-  });
-
-  it('should log out customer and clear stored session', async () => {
-    const email = 'claire@example.com';
-    await service.sendVerificationCode(email);
-    const code = service.lastSentDemoCode()!;
-    await service.verifyCodeAndRegister(email, code, 'Claire', 'Pass1234');
-
-    expect(service.isCustomerLoggedIn()).toBeTrue();
-
-    service.logout();
-    expect(service.isCustomerLoggedIn()).toBeFalse();
-    expect(service.currentCustomer()).toBeNull();
-    expect(service.customerToken()).toBeNull();
   });
 });

@@ -165,7 +165,7 @@ export class AuthService {
       return { success: false, errorMessage: 'Please enter both username and password.' };
     }
 
-    // Try backend authentication first
+    // 1. Try backend authentication
     try {
       const backendRes: any = await firstValueFrom(
         this.http.post(`${this.BACKEND_AUTH_URL}/login`, {
@@ -188,13 +188,28 @@ export class AuthService {
           mustChangePassword: !!backendRes.mustChangePassword
         }));
 
+        // Keep local storage in sync with verified password hash
+        const inputHash = await this.hashPassword(passwordInput);
+        const creds = await this.ensureInitialized();
+        if (creds) {
+          creds.passwordHash = inputHash;
+          creds.isDefaultPassword = !!backendRes.mustChangePassword;
+          localStorage.setItem(this.STORAGE_CREDENTIALS_KEY, JSON.stringify(creds));
+        }
+
         return {
           success: true,
           mustChangePassword: !!backendRes.mustChangePassword
         };
       }
-    } catch (httpError) {
-      // Fallback to client-side cryptographic verification
+    } catch (httpError: any) {
+      if (httpError?.status === 401 || httpError?.error?.errorMessage) {
+        return {
+          success: false,
+          errorMessage: httpError?.error?.errorMessage || 'Invalid username or password.'
+        };
+      }
+      // If backend is completely offline (status 0), proceed to local cryptographic verification
     }
 
     const creds = await this.ensureInitialized();
@@ -262,10 +277,10 @@ export class AuthService {
       return { success: false, errorMessage: 'New password cannot be the default "system" password.' };
     }
 
-    // Update backend if connected
+    // 1. Update backend if connected
     try {
       const token = this.sessionToken();
-      await firstValueFrom(
+      const res: any = await firstValueFrom(
         this.http.post(`${this.BACKEND_AUTH_URL}/change-password`, {
           currentPassword: currentPasswordInput,
           newPassword: newPasswordInput,
@@ -274,25 +289,21 @@ export class AuthService {
           headers: { Authorization: `Bearer ${token}` }
         })
       );
-    } catch (e) {
-      // local fallback handles it
+      if (res && !res.success) {
+        return { success: false, errorMessage: res.errorMessage || 'Could not update password on server.' };
+      }
+    } catch (httpErr: any) {
+      if (httpErr?.status === 400 || httpErr?.status === 401) {
+        return { success: false, errorMessage: httpErr?.error?.errorMessage || 'Current password is incorrect.' };
+      }
     }
 
+    // 2. Update local record
     const creds = await this.ensureInitialized();
-    if (!creds) {
-      return { success: false, errorMessage: 'Admin account record missing.' };
-    }
-
-    const currentHash = await this.hashPassword(currentPasswordInput);
-    if (currentHash !== creds.passwordHash) {
-      return { success: false, errorMessage: 'Current password is incorrect.' };
-    }
-
-    // Hash the new password using one-way SHA-256
     const newHash = await this.hashPassword(newPasswordInput);
 
     const updatedRecord: AdminCredentialsRecord = {
-      username: creds.username,
+      username: creds ? creds.username : 'admin',
       passwordHash: newHash,
       isDefaultPassword: false,
       updatedAt: new Date().toISOString()
@@ -305,7 +316,7 @@ export class AuthService {
     sessionStorage.setItem(this.SESSION_KEY, JSON.stringify({
       authenticated: true,
       token: this.sessionToken(),
-      username: creds.username,
+      username: updatedRecord.username,
       mustChangePassword: false
     }));
 

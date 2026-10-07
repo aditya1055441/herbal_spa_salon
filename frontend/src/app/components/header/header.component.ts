@@ -23,32 +23,40 @@ import { CustomerAuthService } from '../../services/customer-auth.service';
 
         <!-- Desktop Navigation Links -->
         <nav class="desktop-nav">
-          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Philosophy</a>
-          <a routerLink="/services" routerLinkActive="active">Rituals & Treatments</a>
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-highlight">
+            <span class="sparkle-dot"></span>Philosophy
+          </a>
+          <a routerLink="/services" routerLinkActive="active" class="nav-highlight">
+            <span class="sparkle-dot"></span>Rituals & Treatments
+          </a>
           <a routerLink="/diagnostic" routerLinkActive="active" class="nav-highlight">
             <span class="sparkle-dot"></span> Herbal Diagnostic
           </a>
-          <a routerLink="/shop" routerLinkActive="active">Apothecary</a>
-          <a routerLink="/admin" routerLinkActive="active" class="nav-admin" title="Practitioner Admin Panel">Practitioner CMS</a>
+          <a routerLink="/shop" routerLinkActive="active" class="nav-highlight">
+            <span class="sparkle-dot"></span> Apothecary
+          </a>
+          <a routerLink="/admin" routerLinkActive="active" class="nav-highlight" title="Admin Panel">
+            <span class="sparkle-dot"></span> CMS Login
+          </a>
         </nav>
 
         <!-- Right Action Items -->
         <div class="nav-actions">
-          
+
           <!-- Customer Account / Sign In Pill -->
-          <a 
-            *ngIf="customerAuth.isCustomerLoggedIn()" 
-            routerLink="/account" 
-            class="customer-nav-pill" 
+          <a
+            *ngIf="customerAuth.isCustomerLoggedIn()"
+            routerLink="/account"
+            class="customer-nav-pill"
             title="My Sanctuary Account"
           >
             <span class="avatar-dot">🌸</span>
             <span class="cust-first-name">{{ getFirstName() }}</span>
           </a>
 
-          <a 
-            *ngIf="!customerAuth.isCustomerLoggedIn()" 
-            routerLink="/customer/auth" 
+          <a
+            *ngIf="!customerAuth.isCustomerLoggedIn()"
+            routerLink="/customer/auth"
             class="guest-signin-link"
           >
             Guest Sign In
@@ -89,18 +97,18 @@ import { CustomerAuthService } from '../../services/customer-auth.service';
             ✨ Take Diagnostic Questionnaire
           </a>
           <a routerLink="/shop" (click)="closeMobileMenu()">Take-Home Apothecary</a>
-          
-          <a 
-            *ngIf="customerAuth.isCustomerLoggedIn()" 
-            routerLink="/account" 
+
+          <a
+            *ngIf="customerAuth.isCustomerLoggedIn()"
+            routerLink="/account"
             (click)="closeMobileMenu()"
             class="mobile-cust-link"
           >
             🌸 My Sanctuary Profile ({{ customerAuth.currentCustomer()?.name }})
           </a>
-          <a 
-            *ngIf="!customerAuth.isCustomerLoggedIn()" 
-            routerLink="/customer/auth" 
+          <a
+            *ngIf="!customerAuth.isCustomerLoggedIn()"
+            routerLink="/customer/auth"
             (click)="closeMobileMenu()"
             class="mobile-cust-link"
           >

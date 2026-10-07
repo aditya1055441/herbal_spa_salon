@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const crypto = require('crypto');
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
@@ -32,20 +33,95 @@ try {
 }
 
 // -----------------------------------------------------------------------------
-// Admin Authentication & Session Management (One-Way Salted SHA-256)
+// Admin Authentication & Account Service (One-Way Salted SHA-256 with File DB)
 // -----------------------------------------------------------------------------
 const AUTH_SALT = 'aura_botanica_salt_herb_2026';
+const ADMIN_ACCOUNTS_FILE = path.join(__dirname, 'admin_accounts.json');
 
 function hashPassword(password) {
   return crypto.createHash('sha256').update(password + AUTH_SALT).digest('hex');
 }
 
-let adminRecord = {
-  username: 'admin',
-  passwordHash: hashPassword('system'),
-  isDefaultPassword: true,
-  updatedAt: new Date().toISOString()
+// Service to manage admin accounts, hashed passwords, and persistent storage
+const adminAccountService = {
+  accountsMap: null,
+
+  // Load all accounts from file or initialize with default
+  loadAccounts() {
+    const map = new Map();
+    try {
+      if (fs.existsSync(ADMIN_ACCOUNTS_FILE)) {
+        const raw = fs.readFileSync(ADMIN_ACCOUNTS_FILE, 'utf-8');
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          parsed.forEach(acc => map.set(acc.username.toLowerCase(), acc));
+          this.accountsMap = map;
+          return map;
+        }
+      }
+    } catch (e) {
+      console.warn('[AdminAccountService] Error reading admin_accounts.json', e.message);
+    }
+
+    // Default initial admin account: username "admin", password "system"
+    const defaultAdmin = {
+      username: 'admin',
+      passwordHash: hashPassword('system'),
+      isDefaultPassword: true,
+      updatedAt: new Date().toISOString()
+    };
+    map.set(defaultAdmin.username.toLowerCase(), defaultAdmin);
+    this.accountsMap = map;
+    this.saveAccounts(map);
+    return map;
+  },
+
+  // Save all accounts to file DB
+  saveAccounts(map) {
+    try {
+      const list = Array.from(map.values());
+      fs.writeFileSync(ADMIN_ACCOUNTS_FILE, JSON.stringify(list, null, 2), 'utf-8');
+    } catch (e) {
+      console.warn('[AdminAccountService] Error saving admin_accounts.json', e.message);
+    }
+  },
+
+  // Fetch account record based on username
+  getAccountByUsername(username) {
+    if (!username) return null;
+    if (!this.accountsMap) {
+      this.loadAccounts();
+    }
+    const normalized = username.trim().toLowerCase();
+    return this.accountsMap.get(normalized) || null;
+  },
+
+  // Fetch the stored hash password based on username
+  getHashedPassword(username) {
+    const account = this.getAccountByUsername(username);
+    return account ? account.passwordHash : null;
+  },
+
+  // Update password for a specific username
+  updatePassword(username, newPasswordHash) {
+    if (!this.accountsMap) {
+      this.loadAccounts();
+    }
+    const account = this.getAccountByUsername(username);
+    if (!account) return false;
+
+    account.passwordHash = newPasswordHash;
+    account.isDefaultPassword = false;
+    account.updatedAt = new Date().toISOString();
+
+    this.saveAccounts(this.accountsMap);
+    console.log(`[AdminAccountService] Password hash updated in file DB for username "${account.username}"`);
+    return true;
+  }
 };
+
+// Initialize accounts on startup
+adminAccountService.loadAccounts();
 
 // In-memory active session tokens (token -> { username, createdAt })
 const activeSessions = new Map();
@@ -59,7 +135,7 @@ function getBearerToken(req) {
   return req.headers['x-session-token'] || null;
 }
 
-// 1. Admin Login
+// 1. Admin Login (Fetches hashed password based on username from Account Service)
 app.post('/api/auth/login', (req, res) => {
   const { username, password } = req.body;
 
@@ -67,27 +143,32 @@ app.post('/api/auth/login', (req, res) => {
     return res.status(400).json({ success: false, errorMessage: 'Username and password are required.' });
   }
 
-  if (username.trim().toLowerCase() !== adminRecord.username.toLowerCase()) {
+  // 1. Fetch account info based on username
+  const account = adminAccountService.getAccountByUsername(username);
+  if (!account) {
     return res.status(401).json({ success: false, errorMessage: 'Invalid username or password.' });
   }
 
+  // 2. Fetch the stored hash password based on username
+  const storedHash = adminAccountService.getHashedPassword(username);
   const inputHash = hashPassword(password);
-  if (inputHash !== adminRecord.passwordHash) {
+
+  if (!storedHash || inputHash !== storedHash) {
     return res.status(401).json({ success: false, errorMessage: 'Invalid username or password.' });
   }
 
-  // Generate cryptographic session token
+  // 3. Generate cryptographic session token
   const sessionToken = crypto.randomUUID();
   activeSessions.set(sessionToken, {
-    username: adminRecord.username,
+    username: account.username,
     createdAt: Date.now()
   });
 
   return res.json({
     success: true,
     token: sessionToken,
-    username: adminRecord.username,
-    mustChangePassword: adminRecord.isDefaultPassword
+    username: account.username,
+    mustChangePassword: account.isDefaultPassword
   });
 });
 
@@ -103,10 +184,12 @@ app.get('/api/auth/verify', (req, res) => {
   }
 
   const session = activeSessions.get(token);
+  const account = adminAccountService.getAccountByUsername(session.username);
+
   return res.json({
     authenticated: true,
     username: session.username,
-    mustChangePassword: adminRecord.isDefaultPassword
+    mustChangePassword: account ? account.isDefaultPassword : false
   });
 });
 
@@ -118,6 +201,7 @@ app.post('/api/auth/change-password', (req, res) => {
     return res.status(401).json({ success: false, errorMessage: 'Unauthorized. Active session required.' });
   }
 
+  const session = activeSessions.get(token);
   const { currentPassword, newPassword, confirmPassword } = req.body;
 
   if (!currentPassword || !newPassword || !confirmPassword) {
@@ -136,15 +220,23 @@ app.post('/api/auth/change-password', (req, res) => {
     return res.status(400).json({ success: false, errorMessage: 'New password cannot be the default "system" password.' });
   }
 
+  // Verify current password against stored hash for this username
+  const storedHash = adminAccountService.getHashedPassword(session.username);
   const currentHash = hashPassword(currentPassword);
-  if (currentHash !== adminRecord.passwordHash) {
+
+  if (!storedHash || currentHash !== storedHash) {
     return res.status(400).json({ success: false, errorMessage: 'Current password is incorrect.' });
   }
 
-  // Update password hash
-  adminRecord.passwordHash = hashPassword(newPassword);
-  adminRecord.isDefaultPassword = false;
-  adminRecord.updatedAt = new Date().toISOString();
+  // Update password in persistent file DB
+  const newHash = hashPassword(newPassword);
+  const updated = adminAccountService.updatePassword(session.username, newHash);
+
+  if (!updated) {
+    return res.status(500).json({ success: false, errorMessage: 'Failed to update account password.' });
+  }
+
+  console.log(`[AdminAccountService] Password updated successfully for user "${session.username}" and saved to file DB.`);
 
   return res.json({
     success: true,
@@ -164,11 +256,8 @@ app.post('/api/auth/logout', (req, res) => {
 // -----------------------------------------------------------------------------
 // Customer Authentication & Email Verification System
 // -----------------------------------------------------------------------------
-const customerAccounts = new Map(); // email.toLowerCase() -> customer object
-const customerVerificationCodes = new Map(); // email.toLowerCase() -> { code, expiresAt, attempts }
-const customerActiveSessions = new Map(); // sessionToken -> customerId
+const CUSTOMER_ACCOUNTS_FILE = path.join(__dirname, 'customer_accounts.json');
 
-// Initial sample customer for testing
 const sampleCustomer = {
   id: 'cust-helena-01',
   email: 'helena.vance@example.com',
@@ -178,7 +267,35 @@ const sampleCustomer = {
   verified: true,
   createdAt: new Date().toISOString()
 };
-customerAccounts.set(sampleCustomer.email.toLowerCase(), sampleCustomer);
+
+function loadCustomerAccounts() {
+  const map = new Map();
+  map.set(sampleCustomer.email.toLowerCase(), sampleCustomer);
+  try {
+    if (fs.existsSync(CUSTOMER_ACCOUNTS_FILE)) {
+      const data = JSON.parse(fs.readFileSync(CUSTOMER_ACCOUNTS_FILE, 'utf-8'));
+      if (Array.isArray(data)) {
+        data.forEach(c => map.set(c.email.toLowerCase(), c));
+      }
+    }
+  } catch (e) {
+    console.warn('Could not read customer_accounts.json', e.message);
+  }
+  return map;
+}
+
+const customerAccounts = loadCustomerAccounts(); // email.toLowerCase() -> customer object
+const customerVerificationCodes = new Map(); // email.toLowerCase() -> { code, expiresAt, attempts }
+const customerActiveSessions = new Map(); // sessionToken -> customerId
+
+function saveCustomerAccounts() {
+  try {
+    const list = Array.from(customerAccounts.values());
+    fs.writeFileSync(CUSTOMER_ACCOUNTS_FILE, JSON.stringify(list, null, 2), 'utf-8');
+  } catch (e) {
+    console.warn('Could not save customer_accounts.json', e.message);
+  }
+}
 
 // Helper to get customer bearer token
 function getCustomerBearerToken(req) {
@@ -189,6 +306,17 @@ function getCustomerBearerToken(req) {
   return req.headers['x-customer-token'] || null;
 }
 
+// Check if email already registered
+app.get('/api/customer/check-email', (req, res) => {
+  const email = req.query.email;
+  if (!email) {
+    return res.status(400).json({ error: 'Email parameter required.' });
+  }
+  const normalizedEmail = email.trim().toLowerCase();
+  const exists = customerAccounts.has(normalizedEmail);
+  return res.json({ registered: exists });
+});
+
 // 1. Send Email Verification Code (OTP)
 app.post('/api/customer/send-code', (req, res) => {
   const { email } = req.body;
@@ -197,6 +325,15 @@ app.post('/api/customer/send-code', (req, res) => {
   }
 
   const normalizedEmail = email.trim().toLowerCase();
+
+  // If already registered, alert the user to sign in instead
+  if (customerAccounts.has(normalizedEmail)) {
+    return res.status(409).json({
+      success: false,
+      alreadyRegistered: true,
+      errorMessage: 'user already registerd, please sign-in to continue'
+    });
+  }
   
   // Generate 6-digit random code
   const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
@@ -285,6 +422,9 @@ app.post('/api/customer/verify-register', (req, res) => {
     if (phone) customer.phone = phone;
     if (password) customer.passwordHash = hashPassword(password);
   }
+
+  // Save to persistent file
+  saveCustomerAccounts();
 
   // Issue customer session token
   const token = crypto.randomUUID();

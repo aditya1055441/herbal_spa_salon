@@ -135,6 +135,29 @@
   color: #C62828;
 }
 
+.alert-warning {
+  background-color: #FFF8E1;
+  border: 1px solid #FFE082;
+  color: #8D6E1A;
+}
+
+.already-registered-box {
+  padding: 1rem 1.2rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 1.5rem;
+}
+
+.warn-header {
+  font-size: 0.88rem;
+  margin-bottom: 0.25rem;
+}
+
+.warn-desc {
+  font-size: 0.8rem;
+  color: #6D4C13;
+  margin-bottom: 0.5rem;
+}
+
 .alert-success {
   background-color: #E8F5E9;
   color: #2E7D32;

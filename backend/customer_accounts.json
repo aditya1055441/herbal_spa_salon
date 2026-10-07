@@ -1,0 +1,56 @@
+[
+  {
+    "id": "cust-helena-01",
+    "email": "helena.vance@example.com",
+    "name": "Helena Vance",
+    "phone": "(415) 555-0192",
+    "passwordHash": "09485c300781fea2558d71e81db0bb4e7fd7621c35959b55fab4faa118be8221",
+    "verified": true,
+    "createdAt": "2026-10-07T11:34:40.656Z"
+  },
+  {
+    "id": "cust-muy162rk-8xqa",
+    "email": "claire.dubois@example.com",
+    "name": "Claire Dubois",
+    "phone": "",
+    "passwordHash": "90e79d8a3b327197e8afcb851006b4024b19c0c1894a06f650853b8479af35c9",
+    "verified": true,
+    "createdAt": "2026-10-07T11:34:53.312Z"
+  },
+  {
+    "id": "cust-muy1atae-0xhx",
+    "email": "aditya.atos@gmail.com",
+    "name": "Aditya Anand",
+    "phone": "09309181044",
+    "passwordHash": "2b75ce2efabc095730a30505bd2467e939fd1c52d0e1c5605866023c7516dfb5",
+    "verified": true,
+    "createdAt": "2026-10-07T11:38:34.310Z"
+  },
+  {
+    "id": "cust-muy1s7tq-t3px",
+    "email": "eleanor.vance@example.com",
+    "name": "Eleanor Vance",
+    "phone": "",
+    "passwordHash": "0cfd05a21c161400a998c87bcad49f8cd4f9299c17a44ef675452a7b166cb5e9",
+    "verified": true,
+    "createdAt": "2026-10-07T11:52:06.302Z"
+  },
+  {
+    "id": "cust-muy1s7yj-7i2g",
+    "email": "claire.registered@example.com",
+    "name": "Claire",
+    "phone": "",
+    "passwordHash": "429c4fc6c5f118400cff394d8fa2673b4741dfa5571e72d7b56420fb5c4d3073",
+    "verified": true,
+    "createdAt": "2026-10-07T11:52:06.475Z"
+  },
+  {
+    "id": "cust-muy2snd8-79ru",
+    "email": "aditya.atos1@gmail.com",
+    "name": "Aditya kumar",
+    "phone": "9309181044",
+    "passwordHash": "74b816d1323cd95d429fb133b088c31aee2c5322e5cdd24fec2b256cb2a46c66",
+    "verified": true,
+    "createdAt": "2026-10-07T12:20:26.060Z"
+  }
+]
