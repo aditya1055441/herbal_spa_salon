@@ -1,0 +1,252 @@
+.customer-account-section {
+  padding: 4rem 0 6.5rem;
+  background-color: var(--color-bg-cream);
+  min-height: 85vh;
+}
+
+.login-prompt-card {
+  max-width: 520px;
+  margin: 3rem auto;
+  padding: 3.5rem 2rem;
+}
+
+.lock-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Profile Banner */
+.profile-banner {
+  margin-bottom: 2.5rem;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, #ffffff 0%, var(--color-bg-stone) 100%);
+}
+
+.profile-info-row {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.avatar-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background-color: var(--color-forest-deep);
+  color: var(--color-gold-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-serif);
+  font-size: 2.2rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.profile-text {
+  flex: 1;
+}
+
+.badge-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.profile-text h2 {
+  font-size: 1.85rem;
+  margin-bottom: 0.3rem;
+  color: var(--color-forest-deep);
+}
+
+.email-tag, .phone-tag {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 1.2rem;
+}
+
+.verified-dot {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #2E7D32;
+  background-color: #E8F5E9;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-pill);
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2.5rem;
+  align-items: flex-start;
+}
+
+@media (max-width: 960px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.col-header {
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 1.2rem;
+  margin-bottom: 2rem;
+}
+
+.col-header h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.2rem;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Empty Bookings State */
+.empty-bookings-state {
+  padding: 3rem 1.5rem;
+}
+
+.empty-icon {
+  font-size: 2.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.empty-bookings-state h4 {
+  font-size: 1.25rem;
+  margin-bottom: 0.4rem;
+}
+
+.empty-bookings-state p {
+  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Bookings List */
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.booking-item-card {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+  background-color: var(--color-bg-cream);
+  transition: var(--transition-fast);
+}
+
+.booking-item-card:hover {
+  border-color: var(--color-gold);
+  background-color: #ffffff;
+}
+
+.booking-svc-title {
+  font-size: 1.25rem;
+  margin-top: 0.35rem;
+}
+
+.booking-price {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--color-forest-deep);
+}
+
+.booking-specs-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin: 0.8rem 0;
+  font-size: 0.88rem;
+  color: var(--color-forest-rich);
+}
+
+.booking-notes {
+  background-color: var(--color-bg-stone);
+  padding: 0.6rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  margin-bottom: 0.8rem;
+}
+
+.booking-footer {
+  border-top: 1px dashed var(--border-medium);
+  padding-top: 0.8rem;
+  font-size: 0.78rem;
+}
+
+.pos-ref {
+  font-family: monospace;
+  color: var(--color-text-light);
+}
+
+.prep-hint {
+  color: var(--color-sage);
+  font-weight: 500;
+}
+
+/* Status Badges */
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.status-confirmed {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+}
+
+.status-completed {
+  background-color: var(--color-bg-stone);
+  color: var(--color-text-muted);
+}
+
+.status-cancelled {
+  background-color: #FFEBEE;
+  color: #C62828;
+}
+
+/* Side Column Widgets */
+.wellness-card, .apothecary-perk-card {
+  padding: 1.8rem;
+}
+
+.perk-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-gold-dark);
+  margin-bottom: 0.4rem;
+}
+
+.apothecary-perk-card h4, .wellness-card h4 {
+  font-size: 1.25rem;
+  margin-bottom: 0.4rem;
+}
+
+.wellness-card p, .apothecary-perk-card p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+}
+
+.mb-4 { margin-bottom: 1.8rem; }
+.mb-2 { margin-bottom: 0.8rem; }
+.mt-3 { margin-top: 1.2rem; }

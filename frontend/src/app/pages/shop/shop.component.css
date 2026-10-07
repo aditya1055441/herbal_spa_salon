@@ -1,0 +1,188 @@
+.shop-hero-section {
+  background-color: var(--color-bg-stone);
+  padding: 4rem 0 2.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.shop-title {
+  margin-bottom: 0.8rem;
+}
+
+.shop-desc {
+  max-width: 650px;
+  margin: 0 auto 1.5rem;
+  font-size: 1.05rem;
+}
+
+.service-first-callout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: #ffffff;
+  padding: 0.6rem 1.4rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-medium);
+  font-size: 0.82rem;
+  color: var(--color-forest-deep);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.callout-link {
+  color: var(--color-gold-dark);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.shop-filters {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.shop-filters button {
+  background-color: #ffffff;
+  border: 1px solid var(--border-subtle);
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.82rem;
+  color: var(--color-forest-rich);
+  transition: var(--transition-fast);
+}
+
+.shop-filters button:hover {
+  border-color: var(--color-gold);
+}
+
+.shop-filters button.active {
+  background-color: var(--color-forest-deep);
+  color: #ffffff;
+  border-color: var(--color-forest-deep);
+}
+
+.shop-product-card {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-visual-area {
+  height: 220px;
+  background: radial-gradient(circle, var(--color-bg-sage-medium) 0%, var(--color-bg-sage-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.product-botanical-art {
+  font-size: 4.5rem;
+}
+
+.stock-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: var(--color-forest-deep);
+  color: var(--color-bg-cream);
+  font-size: 0.68rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.size-pill {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--color-forest-deep);
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.product-details-area {
+  padding: 1.8rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.cat-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--color-gold-dark);
+  margin-bottom: 0.35rem;
+}
+
+.product-name {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  margin-bottom: 0.5rem;
+  line-height: 1.25;
+}
+
+.product-description {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+}
+
+.product-herbs-box {
+  margin-bottom: 1rem;
+}
+
+.box-label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--color-text-light);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.35rem;
+}
+
+.herb-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.directions-note {
+  font-size: 0.8rem;
+  background-color: var(--color-bg-stone);
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm);
+  color: var(--color-forest-soft);
+  margin-bottom: 1.5rem;
+  margin-top: auto;
+}
+
+.product-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.price-amount {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-forest-deep);
+}
+
+.currency {
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  margin-left: 0.25rem;
+}

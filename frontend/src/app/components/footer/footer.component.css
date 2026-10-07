@@ -1,0 +1,242 @@
+.spa-footer {
+  background-color: var(--color-forest-deep);
+  color: var(--color-text-inverse);
+  position: relative;
+  overflow: hidden;
+}
+
+.botanical-seals-section {
+  background-color: #111D17;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2.2rem 0;
+}
+
+.seals-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+@media (max-width: 900px) {
+  .seals-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 550px) {
+  .seals-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.seal-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.seal-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.seal-text strong {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--color-gold-light);
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+}
+
+.seal-text p {
+  font-size: 0.8rem;
+  color: rgba(249, 247, 242, 0.65);
+  line-height: 1.4;
+}
+
+.main-footer {
+  padding: 4.5rem 0 2rem;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr 1.2fr;
+  gap: 3rem;
+  margin-bottom: 3.5rem;
+}
+
+@media (max-width: 1024px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 650px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.footer-brand {
+  font-family: var(--font-serif);
+  font-size: 1.8rem;
+  color: var(--color-gold-light);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.25rem;
+}
+
+.footer-tagline {
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(249, 247, 242, 0.5);
+  margin-bottom: 1.2rem;
+}
+
+.footer-desc {
+  font-size: 0.9rem;
+  color: rgba(249, 247, 242, 0.7);
+  line-height: 1.7;
+  margin-bottom: 1.5rem;
+}
+
+.social-links {
+  display: flex;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-gold);
+}
+
+.social-links a:hover {
+  color: #ffffff;
+}
+
+.col-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--color-bg-cream);
+  margin-bottom: 1.5rem;
+  position: relative;
+  letter-spacing: 0.05em;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.footer-links a {
+  font-size: 0.88rem;
+  color: rgba(249, 247, 242, 0.7);
+  transition: var(--transition-fast);
+}
+
+.footer-links a:hover {
+  color: var(--color-gold-light);
+  transform: translateX(4px);
+}
+
+.hours-block p, .location-block p {
+  font-size: 0.88rem;
+  color: rgba(249, 247, 242, 0.7);
+  margin-bottom: 0.4rem;
+}
+
+.closed-notice {
+  color: var(--color-gold) !important;
+  font-size: 0.8rem !important;
+  margin-top: 0.5rem;
+}
+
+.location-block {
+  margin-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1.2rem;
+}
+
+.newsletter-col p {
+  font-size: 0.88rem;
+  color: rgba(249, 247, 242, 0.7);
+  margin-bottom: 1rem;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.newsletter-input {
+  flex: 1;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 1rem;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  outline: none;
+}
+
+.newsletter-input:focus {
+  border-color: var(--color-gold);
+}
+
+.subscribe-success {
+  font-size: 0.82rem !important;
+  color: var(--color-gold-light) !important;
+  margin-top: 0.5rem;
+}
+
+.footer-quiz-callout {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(194, 155, 89, 0.25);
+  border-radius: var(--radius-sm);
+}
+
+.quiz-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.quiz-link span {
+  font-size: 0.75rem;
+  color: rgba(249, 247, 242, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.quiz-link strong {
+  font-size: 0.88rem;
+  color: var(--color-gold-light);
+}
+
+.footer-bottom-bar {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: rgba(249, 247, 242, 0.5);
+}
+
+.bottom-links {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.bottom-links a {
+  color: rgba(249, 247, 242, 0.6);
+}
+
+.bottom-links a:hover {
+  color: var(--color-gold-light);
+}

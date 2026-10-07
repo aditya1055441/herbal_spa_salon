@@ -1,0 +1,130 @@
+.login-page-section {
+  padding: 5rem 0 7rem;
+  background-color: var(--color-bg-cream);
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+}
+
+.login-box-wrapper {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.login-card {
+  padding: 3rem 2.5rem;
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-medium);
+}
+
+@media (max-width: 520px) {
+  .login-card {
+    padding: 2rem 1.5rem;
+  }
+}
+
+.auth-header {
+  margin-bottom: 2rem;
+}
+
+.auth-title {
+  font-size: 1.85rem;
+  margin: 0.6rem 0 0.3rem;
+  color: var(--color-forest-deep);
+}
+
+.auth-subtitle {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+}
+
+.default-creds-callout {
+  background-color: var(--color-bg-stone);
+  border: 1px dashed var(--border-gold);
+  border-radius: var(--radius-sm);
+  padding: 1rem 1.2rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+  margin-bottom: 1.8rem;
+  font-size: 0.82rem;
+}
+
+.callout-icon {
+  font-size: 1.2rem;
+}
+
+.callout-content strong {
+  display: block;
+  color: var(--color-forest-deep);
+  margin-bottom: 0.2rem;
+}
+
+.callout-content code {
+  background-color: #ffffff;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  font-family: monospace;
+  font-weight: 600;
+  color: var(--color-forest-deep);
+}
+
+.callout-content small {
+  display: block;
+  color: var(--color-gold-dark);
+  margin-top: 0.3rem;
+  font-weight: 500;
+}
+
+.security-banner {
+  background-color: #E8F5E9;
+  border: 1px solid #C8E6C9;
+  color: #2E7D32;
+  border-radius: var(--radius-sm);
+  padding: 0.85rem 1rem;
+  font-size: 0.82rem;
+  margin-bottom: 1.8rem;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-forest-rich);
+  margin-bottom: 0.4rem;
+}
+
+.auth-btn {
+  padding: 0.95rem;
+  margin-top: 0.5rem;
+}
+
+.auth-error-banner {
+  background-color: #FFEBEE;
+  color: #C62828;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.auth-success-banner {
+  background-color: #E8F5E9;
+  color: #2E7D32;
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.crypto-note {
+  font-size: 0.75rem;
+  color: var(--color-text-light);
+  margin-top: 1.8rem;
+}
