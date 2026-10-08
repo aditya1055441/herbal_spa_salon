@@ -86,17 +86,25 @@ import { CustomerAuthService } from '../../services/customer-auth.service';
         </div>
         <p class="tax-shipping-note">Taxes calculated at Square POS checkout. Carbon-neutral shipping.</p>
 
-        <!-- Square Checkout Action -->
+        <!-- Primary Proceed to Checkout (Razorpay Card Payment) -->
+        <button 
+          class="btn btn-primary w-100 checkout-btn mb-2" 
+          (click)="goToCheckout()"
+        >
+          <span>Proceed to Checkout • $\{{ spaService.cartSubtotal() }} →</span>
+        </button>
+
+        <!-- Square Quick Checkout -->
         <button
-          class="btn btn-primary w-100 checkout-btn"
+          class="btn btn-outline btn-sm w-100 mb-2"
           [disabled]="isCheckingOut()"
           (click)="handleCheckout()"
         >
           <span *ngIf="!isCheckingOut()">
-            Square POS Checkout • $\{{ spaService.cartSubtotal() }}
+            Quick One-Click Checkout (Square)
           </span>
           <span *ngIf="isCheckingOut()" class="spinner-inline">
-            Connecting to Square POS...
+            Connecting...
           </span>
         </button>
 
@@ -144,6 +152,11 @@ export class CartDrawerComponent implements OnInit, OnDestroy {
   public goToShop() {
     this.closeCart();
     this.router.navigate(['/shop']);
+  }
+
+  public goToCheckout() {
+    this.closeCart();
+    this.router.navigate(['/checkout']);
   }
 
   public async handleCheckout() {

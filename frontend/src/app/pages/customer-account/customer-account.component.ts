@@ -118,9 +118,9 @@ import { SpaDataService } from '../../services/spa-data.service';
 
                     <div class="bag-action-buttons">
                       <a routerLink="/shop" class="btn btn-outline btn-sm">Add More Remedies</a>
-                      <button class="btn btn-primary" (click)="openBaggageDrawer()">
-                        Checkout via Square POS →
-                      </button>
+                      <a routerLink="/checkout" class="btn btn-primary">
+                        Proceed to Checkout (Razorpay) →
+                      </a>
                     </div>
                   </div>
                 </div>

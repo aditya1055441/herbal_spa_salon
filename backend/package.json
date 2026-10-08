@@ -7,13 +7,19 @@
     "dev": "node server.js",
     "test": "echo \"Backend healthcheck & test passing\" && exit 0"
   },
-  "keywords": ["square-pos", "herbal-spa", "api", "cloud-run"],
+  "keywords": [
+    "square-pos",
+    "herbal-spa",
+    "api",
+    "cloud-run"
+  ],
   "author": "Aura Botanica",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
+    "razorpay": "^2.9.8",
     "square": "^46.0.0"
   }
 }

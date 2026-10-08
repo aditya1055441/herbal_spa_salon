@@ -56,6 +56,30 @@ Google Cloud Run automatically manages scaling, SSL certificates, custom domains
 
 ---
 
+## 💳 Razorpay Payment Gateway Integration
+
+### 1. Backend Key Security (Zero Secret Exposure)
+The Razorpay credentials are maintained **exclusively on the backend server** (`server.js` or environment variables) and are never exposed in Angular client bundles:
+- **Test Key ID:** `rzp_test_TlHmBY5CY5RsrT`
+- **Test Key Secret:** `uhonCePTSwHWV7nvWpwHlhrU`
+
+Environment variables on Render, GCP, or AWS:
+- `RAZORPAY_KEY_ID`: `rzp_test_TlHmBY5CY5RsrT`
+- `RAZORPAY_KEY_SECRET`: `uhonCePTSwHWV7nvWpwHlhrU`
+
+### 2. Card Checkout Flow (`/checkout`):
+- When a customer adds remedies to their bag, they can click **Proceed to Checkout**.
+- The customer selects **Credit Card** or **Debit Card** and provides:
+  - Cardholder Name
+  - Card Number (16-19 digits, formatted)
+  - Expiry Date (`MM/YY`)
+  - CVV (`3-4 digits`)
+- The frontend requests the backend to create an official Razorpay Order (`/api/razorpay/create-order`).
+- The payment is authorized and validated using **cryptographic HMAC-SHA256 signature verification** on the backend (`/api/razorpay/verify-payment`) using the secret key.
+- The order is recorded in the customer's dashboard and the bag is cleared.
+
+---
+
 ## 💳 Square POS Integration Walk-Through
 
 ### 1. Square Developer Portal

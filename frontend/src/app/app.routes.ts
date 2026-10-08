@@ -28,6 +28,11 @@ export const routes: Routes = [
     title: 'Take-Home Herbal Apothecary | Aura Botanica'
   },
   {
+    path: 'checkout',
+    loadComponent: () => import('./pages/checkout/checkout.component').then(m => m.CheckoutComponent),
+    title: 'Secure Checkout | Razorpay Card Payment | Aura Botanica'
+  },
+  {
     path: 'customer/auth',
     loadComponent: () => import('./pages/customer-auth/customer-auth.component').then(m => m.CustomerAuthComponent),
     title: 'Sanctuary Circle Member Portal | Aura Botanica'

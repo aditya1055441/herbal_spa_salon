@@ -27,13 +27,13 @@ import { CustomerAuthService } from '../../services/customer-auth.service';
             <span class="sparkle-dot"></span>Philosophy
           </a>
           <a routerLink="/services" routerLinkActive="active" class="nav-highlight">
-            <span class="sparkle-dot"></span>Rituals & Treatments
+            <span class="sparkle-dot"></span>Treatments
           </a>
           <a routerLink="/diagnostic" routerLinkActive="active" class="nav-highlight">
             <span class="sparkle-dot"></span> Herbal Diagnostic
           </a>
           <a routerLink="/shop" routerLinkActive="active" class="nav-highlight">
-            <span class="sparkle-dot"></span> Apothecary
+            <span class="sparkle-dot"></span> Shop
           </a>
           <a routerLink="/admin" routerLinkActive="active" class="nav-highlight" title="Admin Panel">
             <span class="sparkle-dot"></span> CMS Login
