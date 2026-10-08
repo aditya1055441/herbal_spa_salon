@@ -26,7 +26,13 @@ export class SquareService {
   // In a real environment, these are populated via environment.ts or config endpoints
   public readonly applicationId = 'sandbox-sq0idb-YOUR_SANDBOX_APP_ID_AURA_BOTANICA';
   public readonly locationId = 'L_AURA_SANCTUARY_01';
-  public readonly backendUrl = 'http://localhost:3000/api/square';
+
+  public get backendUrl(): string {
+    if (typeof window !== 'undefined' && window.location.port === '4200') {
+      return 'http://localhost:3000/api/square';
+    }
+    return '/api/square';
+  }
 
   private paymentsInstance: any = null;
   private cardInstance: any = null;

@@ -24,7 +24,13 @@ export class AuthService {
   private readonly STORAGE_CREDENTIALS_KEY = 'aura_botanica_admin_credentials';
   private readonly SESSION_KEY = 'aura_botanica_admin_session';
   private readonly SALT = 'aura_botanica_salt_herb_2026';
-  private readonly BACKEND_AUTH_URL = 'http://localhost:3000/api/auth';
+
+  public get backendAuthUrl(): string {
+    if (typeof window !== 'undefined' && window.location.port === '4200') {
+      return 'http://localhost:3000/api/auth';
+    }
+    return '/api/auth';
+  }
 
   public isAuthenticated = signal<boolean>(false);
   public needsPasswordChange = signal<boolean>(false);
@@ -127,7 +133,7 @@ export class AuthService {
     try {
       const token = this.sessionToken();
       const res: any = await firstValueFrom(
-        this.http.get(`${this.BACKEND_AUTH_URL}/verify`, {
+        this.http.get(`${this.backendAuthUrl}/verify`, {
           headers: { Authorization: `Bearer ${token}` }
         })
       );
@@ -168,7 +174,7 @@ export class AuthService {
     // 1. Try backend authentication
     try {
       const backendRes: any = await firstValueFrom(
-        this.http.post(`${this.BACKEND_AUTH_URL}/login`, {
+        this.http.post(`${this.backendAuthUrl}/login`, {
           username: trimmedUser,
           password: passwordInput
         })
@@ -281,7 +287,7 @@ export class AuthService {
     try {
       const token = this.sessionToken();
       const res: any = await firstValueFrom(
-        this.http.post(`${this.BACKEND_AUTH_URL}/change-password`, {
+        this.http.post(`${this.backendAuthUrl}/change-password`, {
           currentPassword: currentPasswordInput,
           newPassword: newPasswordInput,
           confirmPassword: confirmPasswordInput
@@ -330,7 +336,7 @@ export class AuthService {
     const token = this.sessionToken();
     if (token) {
       try {
-        this.http.post(`${this.BACKEND_AUTH_URL}/logout`, {}, {
+        this.http.post(`${this.backendAuthUrl}/logout`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         }).subscribe({ error: () => {} });
       } catch (e) {}

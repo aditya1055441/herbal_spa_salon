@@ -24,7 +24,13 @@ export class CustomerAuthService {
   private readonly STORAGE_TOKEN_KEY = 'aura_botanica_customer_token';
   private readonly STORAGE_REGISTERED_USERS_KEY = 'aura_botanica_registered_customers';
   private readonly SALT = 'aura_botanica_salt_herb_2026';
-  private readonly BACKEND_URL = 'http://localhost:3000/api/customer';
+
+  public get backendUrl(): string {
+    if (typeof window !== 'undefined' && window.location.port === '4200') {
+      return 'http://localhost:3000/api/customer';
+    }
+    return '/api/customer';
+  }
 
   public currentCustomer = signal<CustomerUser | null>(this.loadCustomerFromStorage());
   public customerToken = signal<string | null>(this.loadTokenFromStorage());
@@ -162,7 +168,7 @@ export class CustomerAuthService {
     // 2. Query backend
     try {
       const res: any = await firstValueFrom(
-        this.http.post<VerificationCodeResponse>(`${this.BACKEND_URL}/send-code`, { email: trimmedEmail })
+        this.http.post<VerificationCodeResponse>(`${this.backendUrl}/send-code`, { email: trimmedEmail })
       );
 
       if (res && res.success) {
@@ -225,7 +231,7 @@ export class CustomerAuthService {
 
     try {
       const res: any = await firstValueFrom(
-        this.http.post<CustomerAuthResponse>(`${this.BACKEND_URL}/verify-register`, {
+        this.http.post<CustomerAuthResponse>(`${this.backendUrl}/verify-register`, {
           email: trimmedEmail,
           code: trimmedCode,
           name,
@@ -276,7 +282,7 @@ export class CustomerAuthService {
     // 1. Try backend authentication
     try {
       const res: any = await firstValueFrom(
-        this.http.post<CustomerAuthResponse>(`${this.BACKEND_URL}/login`, {
+        this.http.post<CustomerAuthResponse>(`${this.backendUrl}/login`, {
           email: trimmedEmail,
           password
         })
@@ -345,7 +351,7 @@ export class CustomerAuthService {
     const token = this.customerToken();
     if (token) {
       try {
-        this.http.post(`${this.BACKEND_URL}/logout`, {}, {
+        this.http.post(`${this.backendUrl}/logout`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         }).subscribe({ error: () => {} });
       } catch (e) {}
